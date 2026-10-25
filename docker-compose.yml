@@ -1,0 +1,35 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+    depends_on: [mysql, redis]
+
+  scheduler:
+    build: .
+    command: php artisan schedule:work
+    volumes:
+      - .:/var/www/html
+    depends_on: [mysql, redis]
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql:/docker-entrypoint-initdb.d:ro   # creates <DB_DATABASE>_testing on a fresh volume
+
+  redis:
+    image: redis:8.10-alpine
+
+volumes:
+  mysql-data:
