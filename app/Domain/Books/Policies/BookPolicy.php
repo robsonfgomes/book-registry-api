@@ -25,7 +25,6 @@ class BookPolicy
         return $this->owns($user, $book);
     }
 
-    // 404 instead of 403, so the API never reveals that another user's book exists.
     private function owns(User $user, Book $book): Response
     {
         return $user->id === $book->user_id
