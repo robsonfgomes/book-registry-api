@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\Response as DocResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,8 @@ use Throwable;
 
 class HealthController extends Controller
 {
+    #[DocResponse(200, 'All dependencies are available', type: "array{status: 'ok', checks: array{app: 'ok', database: 'ok'|'fail', redis: 'ok'|'fail'}}")]
+    #[DocResponse(503, 'A dependency is unavailable', type: "array{status: 'fail', checks: array{app: 'ok', database: 'ok'|'fail', redis: 'ok'|'fail'}}")]
     public function __invoke(): JsonResponse
     {
         $checks = [
@@ -36,7 +39,7 @@ class HealthController extends Controller
             $probe();
 
             return 'ok';
-        } catch (Throwable $exception) {            
+        } catch (Throwable $exception) {
             Log::error("Health check failed: {$name}", ['exception' => $exception]);
 
             return 'fail';

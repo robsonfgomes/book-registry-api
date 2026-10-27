@@ -29,7 +29,6 @@ class AuthController extends Controller
         $user = User::where('email', $request->validated('email'))->first();
 
         if ($user === null || ! Hash::check($request->validated('password'), $user->password)) {
-            // Same message for unknown email and wrong password, so the response does not reveal which accounts exist.
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
@@ -53,7 +52,12 @@ class AuthController extends Controller
     private function tokenResponse(User $user): JsonResponse
     {
         return UserResource::make($user)
-            ->additional(['token' => $user->createToken('api')->plainTextToken])
+            ->additional(['token' => $this->issueToken($user)])
             ->response();
+    }
+
+    private function issueToken(User $user): string
+    {
+        return $user->createToken('api')->plainTextToken;
     }
 }

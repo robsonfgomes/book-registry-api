@@ -7,10 +7,21 @@ namespace App\Http\Requests;
 use App\Domain\Books\Exceptions\DuplicateIsbnException;
 use App\Domain\Books\Models\Book;
 use App\Domain\Books\ValueObjects\Isbn;
+use Dedoc\Scramble\Attributes\BodyParameter;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+#[BodyParameter(
+    'isbn',
+    description: 'ISBN-13: exactly 13 digits, sent as a string so leading zeros are kept.',
+    example: '9780132350884',
+)]
+#[BodyParameter(
+    'value',
+    description: 'Up to 2 decimal places. Returned as a string to keep the exact amount.',
+    example: 89.90,
+)]
 class StoreBookRequest extends FormRequest
 {
     /**

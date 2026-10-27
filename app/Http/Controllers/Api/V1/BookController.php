@@ -13,6 +13,8 @@ use App\Http\Requests\IndexBookRequest;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Http\Resources\BookResource;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\IgnoreResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -43,6 +45,7 @@ class BookController extends Controller
         return BookResource::make($book)->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
+    #[IgnoreResponse(403)]
     public function show(Book $book): BookResource
     {
         Gate::authorize('view', $book);
@@ -50,11 +53,12 @@ class BookController extends Controller
         return BookResource::make($book);
     }
 
+    #[IgnoreResponse(403)]
+    #[Endpoint(description: 'Send only the fields to change. The same endpoint also accepts `PUT`.')]
     public function update(UpdateBookRequest $request, Book $book, UpdateBook $updateBook): BookResource
     {
         Gate::authorize('update', $book);
 
-        // Fields missing from a PATCH keep their current values.
         $book = $updateBook->handle(
             $book,
             $request->validated('name', $book->name),
@@ -65,6 +69,7 @@ class BookController extends Controller
         return BookResource::make($book);
     }
 
+    #[IgnoreResponse(403)]
     public function destroy(Book $book): Response
     {
         Gate::authorize('delete', $book);
