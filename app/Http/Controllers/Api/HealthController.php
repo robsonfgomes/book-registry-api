@@ -6,10 +6,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class HealthController extends Controller
@@ -36,8 +36,7 @@ class HealthController extends Controller
             $probe();
 
             return 'ok';
-        } catch (Throwable $exception) {
-            // Error details go to the log only; the response must not leak hosts or credentials.
+        } catch (Throwable $exception) {            
             Log::error("Health check failed: {$name}", ['exception' => $exception]);
 
             return 'fail';
