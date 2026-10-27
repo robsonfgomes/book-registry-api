@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
