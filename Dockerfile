@@ -5,8 +5,8 @@ ARG UID=1000
 ARG GID=1000
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libzip-dev \
-    && docker-php-ext-install pdo_mysql bcmath zip \
+    && apt-get install -y --no-install-recommends git unzip libzip-dev libicu-dev \
+    && docker-php-ext-install pdo_mysql bcmath intl zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get clean \

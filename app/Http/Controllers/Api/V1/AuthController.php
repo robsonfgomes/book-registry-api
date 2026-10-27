@@ -47,12 +47,12 @@ class AuthController extends Controller
 
     public function me(Request $request): UserResource
     {
-        return new UserResource($request->user());
+        return UserResource::make($request->user());
     }
 
     private function tokenResponse(User $user): JsonResponse
     {
-        return (new UserResource($user))
+        return UserResource::make($user)
             ->additional(['token' => $user->createToken('api')->plainTextToken])
             ->response();
     }

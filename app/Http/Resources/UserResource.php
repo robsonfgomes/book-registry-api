@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\FormatsDates;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,6 +14,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class UserResource extends JsonResource
 {
+    use FormatsDates;
+
     /**
      * @return array<string, mixed>
      */
@@ -22,8 +25,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'created_at' => $this->formatDate($this->created_at),
+            'updated_at' => $this->formatDate($this->updated_at),
         ];
     }
 }

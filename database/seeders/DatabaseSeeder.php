@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Books\Models\Book;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,9 +16,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::updateOrCreate(
+        $demo = User::updateOrCreate(
             ['email' => 'demo@example.com'],
             ['name' => 'Demo User', 'password' => 'password'],
         );
+
+        if ($demo->books()->doesntExist()) {
+            Book::factory()->count(20)->for($demo)->create();
+        }
     }
 }

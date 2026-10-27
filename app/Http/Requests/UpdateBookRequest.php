@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests;
+
+use App\Domain\Books\Exceptions\DuplicateIsbnException;
+use App\Domain\Books\Models\Book;
+use App\Domain\Books\ValueObjects\Isbn;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdateBookRequest extends FormRequest
+{
+    /**
+     * Fields are optional so PATCH can send only what changes; when present, they follow the store rules.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'isbn' => [
+                'sometimes',
+                'required',
+                'string',
+                'digits:'.Isbn::LENGTH,
+                Rule::unique(Book::class)->where('user_id', $this->user()->id)->ignore($this->route('book')),
+            ],
+            'value' => ['sometimes', 'required', 'numeric', 'decimal:0,2', 'min:0', 'max:'.Book::MAX_VALUE],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'isbn.unique' => DuplicateIsbnException::MESSAGE,
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'isbn' => 'ISBN',
+        ];
+    }
+}

@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Books\Models\Book;
+use App\Domain\Books\Policies\BookPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -26,7 +30,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Book::class, BookPolicy::class);
+
+        $this->configureRouteBindings();
         $this->configureRateLimiting();
+    }
+
+    private function configureRouteBindings(): void
+    {
+        // {book} is resolved only among the authenticated user's books, so another user's book is a 404.
+        Route::bind('book', function (string $value): Book {
+            return request()->user()->books()->findOrFail($value);
+        });
     }
 
     private function configureRateLimiting(): void
